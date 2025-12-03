@@ -1,0 +1,549 @@
+// --------------------------------------------------
+// GENERATOR & DATASOURCE
+// --------------------------------------------------
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --------------------------------------------------
+// USER & AUTH
+// --------------------------------------------------
+model User {
+  id                String   @id @default(uuid())
+  name              String
+  email             String   @unique
+  password          String
+  phone             String?  @unique
+  role              Role     @default(USER)
+  emailVerified     Boolean  @default(false)
+  verificationToken String?  @unique
+  otp               String?
+  otpExpiry         DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  donorProfile          DonorProfile?
+  recipientProfile      RecipientProfile?
+  adminProfile          AdminProfile?
+  appointments          Appointment[]
+  notifications         Notification[]
+  campaignRegistrations CampaignRegistration[]
+  campaignDonations     CampaignDonation[]
+  donationRequests      DonationRequest[]
+  bloodUnits            BloodUnit[]
+  emergencyResponses    EmergencyResponse[]
+}
+
+enum Role {
+  USER
+  ADMIN
+  ORGANIZATION
+}
+
+// --------------------------------------------------
+// ADMIN PROFILE
+// --------------------------------------------------
+model AdminProfile {
+  id               String  @id @default(uuid())
+  user             User    @relation(fields: [userId], references: [id])
+  userId           String  @unique
+  region           String // City/District assigned
+  specialization   String? // e.g., "Rare Blood Types", "Medical Review"
+  isAvailable      Boolean @default(true)
+  maxDailyRequests Int     @default(50)
+
+  assignedRequests DonationRequest[] @relation("AssignedAdmin")
+  reviewedRequests DonationRequest[] @relation("ReviewedBy")
+
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?
+
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+// --------------------------------------------------
+// DONOR PROFILE
+// --------------------------------------------------
+model DonorProfile {
+  id               String     @id @default(uuid())
+  user             User       @relation(fields: [userId], references: [id])
+  userId           String     @unique
+  bloodGroup       BloodGroup
+  location         String
+  latitude         Float?
+  longitude        Float?
+  weight           Int?       // In kg (> 50kg required)
+  dateOfBirth      DateTime?  // > 18 years required
+  hasDiseases      Boolean    @default(false)
+  totalDonations   Int        @default(0)
+  lastDonationDate DateTime?
+  nextEligibleDate DateTime?
+  badge            DonorBadge @default(NORMAL)
+
+  donationHistory DonationHistory[]
+}
+
+enum BloodGroup {
+  A_POS
+  A_NEG
+  B_POS
+  B_NEG
+  AB_POS
+  AB_NEG
+  O_POS
+  O_NEG
+}
+
+enum DonorBadge {
+  NORMAL
+  VERIFIED
+  RELIABLE
+  HERO
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+}
+
+// --------------------------------------------------
+// DONATION REQUESTS
+// --------------------------------------------------
+model DonationRequest {
+  id     String @id @default(uuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  // Request Details
+  bloodGroup     BloodGroup
+  requestedUnits Int        @default(1)
+  donationCenter String // Preferred center
+  location       String // User's location for assignment
+  city           String // For regional assignment
+  preferredDate  DateTime
+
+  // Medical Information
+  medicalReportUrl  String? // Uploaded medical report
+  medicalConditions String? // Any conditions to note
+  lastDonationDate  DateTime?
+
+  // Assignment & Review
+  status          DonationRequestStatus @default(PENDING)
+  priority        PriorityLevel         @default(NORMAL)
+  assignedAdmin   AdminProfile?         @relation("AssignedAdmin", fields: [assignedAdminId], references: [id])
+  assignedAdminId String?
+  assignedAt      DateTime?
+
+  reviewedBy      AdminProfile? @relation("ReviewedBy", fields: [reviewedById], references: [id])
+  reviewedById    String?
+  reviewedAt      DateTime?
+  reviewNotes     String? // Admin's notes
+  rejectionReason String?
+
+  // Organization & Fulfillment
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?       // Preferred Organization
+
+  fulfilledByUnit   BloodUnit? @relation(fields: [fulfilledByUnitId], references: [id])
+  fulfilledByUnitId String?    @unique
+
+  // Appointment (if approved)
+  appointmentId        String?   @unique
+  scheduledAppointment DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum DonationRequestStatus {
+  PENDING // Waiting for admin assignment
+  ASSIGNED // Assigned to admin
+  UNDER_REVIEW // Admin reviewing medical report
+  APPROVED // Approved, appointment scheduled
+  REJECTED // Rejected by admin
+  COMPLETED // Donation completed
+  CANCELLED // Cancelled by user
+}
+
+enum PriorityLevel {
+  NORMAL
+  URGENT // Rare blood type or high demand
+  CRITICAL // Emergency shortage
+}
+
+// --------------------------------------------------
+// RECIPIENT PROFILE
+// --------------------------------------------------
+model RecipientProfile {
+  id            String         @id @default(uuid())
+  user          User           @relation(fields: [userId], references: [id])
+  userId        String         @unique
+  location      String
+  latitude      Float?
+  longitude     Float?
+  bloodRequests BloodRequest[]
+}
+
+// --------------------------------------------------
+// BLOOD REQUESTS
+// --------------------------------------------------
+model BloodRequest {
+  id          String           @id @default(uuid())
+  recipient   RecipientProfile @relation(fields: [recipientId], references: [id])
+  recipientId String
+  bloodGroup  BloodGroup
+  urgency     UrgencyLevel
+  status      RequestStatus    @default(PENDING)
+  createdAt   DateTime         @default(now())
+  closedAt    DateTime?
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  CLOSED
+}
+
+enum UrgencyLevel {
+  NORMAL
+  HIGH
+  EMERGENCY
+}
+
+// --------------------------------------------------
+// DONATION HISTORY
+// --------------------------------------------------
+model DonationHistory {
+  id         String       @id @default(uuid())
+  donor      DonorProfile @relation(fields: [donorId], references: [id])
+  donorId    String
+  date       DateTime     @default(now())
+  livesSaved Int          @default(1)
+}
+
+// --------------------------------------------------
+// APPOINTMENTS
+// --------------------------------------------------
+model Appointment {
+  id          String            @id @default(uuid())
+  user        User              @relation(fields: [userId], references: [id])
+  userId      String
+  scheduledAt DateTime
+  status      AppointmentStatus @default(PENDING)
+  createdAt   DateTime          @default(now())
+
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?
+}
+
+
+enum AppointmentStatus {
+  PENDING
+  APPROVED
+  RESCHEDULED
+  CANCELED
+  COMPLETED
+  REJECTED
+}
+
+// --------------------------------------------------
+// BLOOD INVENTORY
+// --------------------------------------------------
+model BloodInventory {
+  id         String     @id @default(uuid())
+  bloodGroup BloodGroup
+  quantity   Int        @default(0)
+  location   String     // Region/District this inventory belongs to
+  
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?
+
+  expiryDate DateTime
+  createdAt  DateTime   @default(now())
+}
+
+// --------------------------------------------------
+// CAMPAIGNS
+// --------------------------------------------------
+model Campaign {
+  id             String       @id @default(uuid())
+  title          String
+  description    String
+  date           DateTime
+  startTime      String
+  endTime        String
+  location       String
+  latitude       Float?
+  longitude      Float?
+  bannerUrl      String?
+  governmentPermitUrl String?
+  rejectionReason String?
+  
+  organizer      Organization @relation(fields: [organizerId], references: [id])
+  organizerId    String
+  
+  status         CampaignStatus @default(PAYMENT_PENDING)
+  registrations  CampaignRegistration[]
+  donations      CampaignDonation[]
+  payments       Payment[]
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+enum CampaignStatus {
+  PAYMENT_PENDING
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+  CANCELLED
+}
+
+// --------------------------------------------------
+// PAYMENTS
+// --------------------------------------------------
+model Payment {
+  id              String          @id @default(uuid())
+  campaign        Campaign        @relation(fields: [campaignId], references: [id])
+  campaignId      String
+  provider        PaymentProvider
+  amount          Float
+  transactionId   String?         // eSewa/Khalti transaction ID
+  pidx            String?         // Khalti payment index
+  transactionUuid String?         // eSewa transaction UUID
+  status          PaymentStatus   @default(INITIATED)
+  refundId        String?
+  refundedAt      DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+enum PaymentProvider {
+  ESEWA
+  KHALTI
+}
+
+enum PaymentStatus {
+  INITIATED
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// --------------------------------------------------
+// CAMPAIGN DONATIONS (User money donations)
+// --------------------------------------------------
+model CampaignDonation {
+  id              String          @id @default(uuid())
+  campaign        Campaign        @relation(fields: [campaignId], references: [id])
+  campaignId      String
+  user            User            @relation(fields: [userId], references: [id])
+  userId          String
+  amount          Float
+  provider        PaymentProvider
+  transactionUuid String?
+  transactionId   String?
+  status          PaymentStatus   @default(INITIATED)
+  message         String?
+  createdAt       DateTime        @default(now())
+}
+
+model CampaignRegistration {
+  id           String      @id @default(uuid())
+  campaign     Campaign    @relation(fields: [campaignId], references: [id])
+  campaignId   String
+  
+  user         User?       @relation(fields: [userId], references: [id])
+  userId       String?
+
+  // Guest fields for walk-ins
+  guestName       String?
+  guestBloodGroup String?
+  guestPhone      String?
+  guestEmail      String?
+
+  status       RegistrationStatus @default(REGISTERED)
+
+  registeredAt DateTime    @default(now())
+}
+
+enum RegistrationStatus {
+  REGISTERED
+  DONATED
+  NO_SHOW
+}
+
+// --------------------------------------------------
+// NOTIFICATIONS
+// --------------------------------------------------
+model Notification {
+  id        String           @id @default(uuid())
+  user      User             @relation(fields: [userId], references: [id])
+  userId    String
+  message   String
+  type      NotificationType
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+}
+
+enum NotificationType {
+  GENERAL
+  EMERGENCY
+  APPOINTMENT
+  REQUEST_ALERT
+  ADMIN_ANNOUNCEMENT
+  LIVES_SAVED
+}
+
+// --------------------------------------------------
+// ORGANIZATION & UNIT TRACKING
+// --------------------------------------------------
+model Organization {
+  id          String   @id @default(uuid())
+  name        String   @unique // e.g., "Red Cross Kathmandu", "Norvic Hospital"
+  type        OrgType  @default(HOSPITAL)
+  location    String
+  latitude    Float?
+  longitude   Float?
+  contactInfo String?
+  website     String?
+  licenseUrl  String?
+  status      OrgStatus @default(PENDING) // Replaces isVerified
+  
+  admins      AdminProfile[]
+  inventory   BloodInventory[]
+  bloodUnits  BloodUnit[]
+  requests    DonationRequest[]
+  campaigns   Campaign[]
+  emergencyRequests EmergencyRequest[]
+  appointments Appointment[]
+  
+  createdAt   DateTime @default(now())
+
+  updatedAt   DateTime @updatedAt
+}
+
+
+
+enum OrgStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum OrgType {
+  HOSPITAL
+  BLOOD_BANK
+  NGO
+  GOVERNMENT
+}
+
+model BloodUnit {
+  id             String         @id @default(uuid())
+  
+  donor          User?          @relation(fields: [donorId], references: [id])
+  donorId        String?
+
+  // For Walk-in Donors
+  guestName      String?
+  guestEmail     String?
+  
+  organization   Organization   @relation(fields: [organizationId], references: [id])
+  organizationId String
+
+  bloodGroup     BloodGroup
+  volume         Int            @default(450) // ml
+  status         BloodUnitStatus @default(AVAILABLE)
+  
+  donatedAt      DateTime       @default(now())
+  expiryDate     DateTime
+  
+  // Link to request when used
+  usedFor        DonationRequest?
+  
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+enum BloodUnitStatus {
+  AVAILABLE
+  RESERVED
+  USED
+  EXPIRED
+  DISCARDED
+}
+
+// --------------------------------------------------
+// EMERGENCY BLOOD REQUESTS
+// --------------------------------------------------
+model EmergencyRequest {
+  id              String   @id @default(uuid())
+  
+  organization    Organization @relation(fields: [organizationId], references: [id])
+  organizationId  String
+  
+  bloodGroup      BloodGroup
+  unitsNeeded     Int
+  urgencyLevel    UrgencyLevel @default(EMERGENCY)
+  
+  // Location details
+  location        String
+  latitude        Float
+  longitude       Float
+  hospitalName    String?
+  contactPerson   String
+  contactPhone    String
+  
+  // Broadcast details
+  radiusKm        Float      @default(10) // Search radius in kilometers
+  message         String?    // Custom message
+  
+  status          EmergencyStatus @default(ACTIVE)
+  expiresAt       DateTime
+  
+  // Responses
+  responses       EmergencyResponse[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+enum EmergencyStatus {
+  ACTIVE
+  FULFILLED
+  EXPIRED
+  CANCELLED
+}
+
+model EmergencyResponse {
+  id                String   @id @default(uuid())
+  
+  request           EmergencyRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  requestId         String
+  
+  donor             User     @relation(fields: [donorId], references: [id])
+  donorId           String
+  
+  status            ResponseStatus @default(PENDING)
+  estimatedArrival  DateTime?
+  notes             String?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@unique([requestId, donorId])
+}
+
+enum ResponseStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  COMPLETED
+}
