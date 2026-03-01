@@ -26,6 +26,11 @@ const BADGE_SCORES: Record<DonorBadge, number> = {
     VERIFIED: 50,
     RELIABLE: 75,
     HERO: 100,
+    BRONZE: 30,
+    SILVER: 50,
+    GOLD: 70,
+    PLATINUM: 85,
+    DIAMOND: 100,
 };
 
 interface DonorWithUser {

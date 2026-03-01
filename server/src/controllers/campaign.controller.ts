@@ -1,5 +1,5 @@
 
-import { Request, Response } from 'express';
+import { Request, Response } from 'express'; // trigger restart
 import { PrismaClient, CampaignStatus } from '@prisma/client';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { sendEmail } from '../utils/email.utils';
@@ -177,6 +177,7 @@ export const updateCampaign = async (req: AuthenticatedRequest, res: Response) =
 // Get Campaign Details (Organization Only) with Registrations
 export const getCampaignDetails = async (req: AuthenticatedRequest, res: Response) => {
     try {
+        console.log("Fetching campaign details for id:", req.params.id);
         const { id } = req.params;
         let organizationId = req.user?.organizationId;
 
@@ -195,6 +196,11 @@ export const getCampaignDetails = async (req: AuthenticatedRequest, res: Respons
                                 donorProfile: true
                             }
                         }
+                    }
+                },
+                donations: {
+                    include: {
+                        user: true
                     }
                 }
             }

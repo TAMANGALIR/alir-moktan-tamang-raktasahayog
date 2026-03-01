@@ -98,7 +98,7 @@ const OrgCampaignDetails = () => {
     const confirmedDonors = campaign.registrations.filter(r => r.status === 'DONATED').length;
 
     // Prepare Table Data
-    const columns = [
+    const registrationColumns = [
         {
             key: 'name',
             header: 'Donor Name',
@@ -187,6 +187,56 @@ const OrgCampaignDetails = () => {
         link.click();
         document.body.removeChild(link);
     };
+
+    const donationColumns = [
+        {
+            key: 'name',
+            header: 'Donor Name',
+            className: 'min-w-[150px]',
+            render: (_, row) => row.user?.name || 'N/A'
+        },
+        {
+            key: 'contact',
+            header: 'Contact / Email',
+            className: 'min-w-[150px]',
+            render: (_, row) => (
+                <div>
+                    <div>{row.user?.phone || 'N/A'}</div>
+                    <div className="text-xs text-gray-500">{row.user?.email || 'N/A'}</div>
+                </div>
+            )
+        },
+        {
+            key: 'amount',
+            header: 'Amount (Rs)',
+            className: 'min-w-[100px] font-semibold text-green-600',
+            render: (val) => `Rs. ${val}`
+        },
+        {
+            key: 'provider',
+            header: 'Provider',
+            className: 'min-w-[100px]',
+            render: (val) => val
+        },
+        {
+            key: 'status',
+            header: 'Status',
+            className: 'min-w-[100px]',
+            render: (val) => (
+                <span className={`px-2 py-1 rounded text-xs font-medium ${val === 'COMPLETED' ? 'bg-green-100 text-green-700' :
+                        val === 'FAILED' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
+                    }`}>
+                    {val}
+                </span>
+            )
+        },
+        {
+            key: 'createdAt',
+            header: 'Date',
+            className: 'min-w-[120px]',
+            render: (val) => new Date(val).toLocaleDateString()
+        }
+    ];
 
     return (
         <div className="space-y-6">
@@ -304,9 +354,22 @@ const OrgCampaignDetails = () => {
                 </div>
 
                 <Table
-                    columns={columns}
+                    columns={registrationColumns}
                     data={campaign.registrations}
                     emptyMessage="No users have registered for this campaign yet."
+                />
+            </div>
+
+            {/* Financial Donations Table */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">Financial Donations</h2>
+                </div>
+
+                <Table
+                    columns={donationColumns}
+                    data={campaign.donations || []}
+                    emptyMessage="No financial donations have been made for this campaign yet."
                 />
             </div>
 
