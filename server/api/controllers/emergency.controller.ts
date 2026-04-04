@@ -105,31 +105,7 @@ export const createEmergencyRequest = async (req: AuthenticatedRequest, res: Res
 
         await Promise.all(notificationPromises);
 
-        // Send SMS to eligible donors (using free TextBelt service)
-        if (eligibleDonors.length > 0 && process.env.ENABLE_SMS === 'true') {
-            try {
-                const smsPromises = eligibleDonors.slice(0, 5).map(async (donor) => {
-                    if (!donor.user.phone) return;
 
-                    const message = `🚨 URGENT BLOOD NEEDED\nType: ${bloodGroup.replace('_', ' ')}\nUnits: ${unitsNeeded}\nLocation: ${hospitalName || location}\nDistance: ~${Math.round(donor.distance)}km\nContact: ${contactPerson}\n${contactPhone}`;
-
-                    await fetch('https://textbelt.com/text', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            phone: donor.user.phone,
-                            message: message,
-                            key: process.env.TEXTBELT_API_KEY || 'textbelt'
-                        })
-                    });
-                });
-
-                await Promise.allSettled(smsPromises);
-                console.log(`SMS sent to ${Math.min(eligibleDonors.length, 5)} donors`);
-            } catch (error) {
-                console.error('SMS sending failed:', error);
-            }
-        }
 
         console.log(`Emergency broadcast created. ${eligibleDonors.length} eligible donors notified.`);
 
@@ -510,30 +486,7 @@ export const rebroadcastEmergency = async (req: AuthenticatedRequest, res: Respo
 
         await Promise.all(notificationPromises);
 
-        // Optional: Send SMS again if enabled
-        if (eligibleDonors.length > 0 && process.env.ENABLE_SMS === 'true') {
-            try {
-                const smsPromises = eligibleDonors.slice(0, 5).map(async (donor) => {
-                    if (!donor.user.phone) return;
 
-                    const message = `🚨 REMINDER: URGENT BLOOD NEEDED\nType: ${request.bloodGroup.replace('_', ' ')}\nUnits: ${request.unitsNeeded}\nLocation: ${request.hospitalName || request.location}\nDistance: ~${Math.round(donor.distance)}km\nContact: ${request.contactPerson}\n${request.contactPhone}`;
-
-                    await fetch('https://textbelt.com/text', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            phone: donor.user.phone,
-                            message: message,
-                            key: process.env.TEXTBELT_API_KEY || 'textbelt'
-                        })
-                    });
-                });
-
-                await Promise.allSettled(smsPromises);
-            } catch (error) {
-                console.error('SMS re-broadcast failed:', error);
-            }
-        }
 
         res.json({
             success: true,

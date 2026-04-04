@@ -703,6 +703,8 @@ export const updateRegistrationStatus = async (req: AuthenticatedRequest, res: R
                         </div>`
                     );
                 }
+
+
             }
         }
 
@@ -752,6 +754,45 @@ export const registerGuest = async (req: AuthenticatedRequest, res: Response) =>
         res.json(registration);
     } catch (error) {
         console.error("Register Guest Error:", error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+// Get Public Campaign By ID
+export const getPublicCampaignById = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const prismaAny = prisma as any;
+
+        const campaign = await prisma.campaign.findUnique({
+            where: {
+                id,
+                status: CampaignStatus.APPROVED
+            },
+            include: {
+                organizer: true,
+                _count: {
+                    select: { registrations: true, donations: true }
+                }
+            }
+        });
+
+        if (!campaign) {
+            return res.status(404).json({ message: 'Campaign not found' });
+        }
+
+        // Aggregate total donations for this campaign
+        const result = await prismaAny.campaignDonation.aggregate({
+            where: { campaignId: campaign.id, status: 'COMPLETED' },
+            _sum: { amount: true }
+        });
+
+        res.json({
+            ...campaign,
+            totalDonated: result._sum.amount || 0
+        });
+    } catch (error) {
+        console.error('Get Public Campaign By ID Error:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 };

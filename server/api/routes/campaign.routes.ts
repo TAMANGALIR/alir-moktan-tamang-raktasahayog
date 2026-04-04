@@ -9,6 +9,7 @@ import {
     getAllCampaignsForAdmin,
     updateCampaignStatus,
     getPublicCampaigns,
+    getPublicCampaignById,
     getCampaignDetails,
     updateRegistrationStatus,
     registerGuest
@@ -18,6 +19,7 @@ const router = express.Router();
 
 // Public Routes
 router.get('/public', getPublicCampaigns);
+router.get('/public/:id', getPublicCampaignById);
 
 // Organization Routes
 router.post('/', authenticateToken, authorizeRoles('ORGANIZATION'), upload.fields([

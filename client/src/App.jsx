@@ -25,6 +25,7 @@ import RequestDonation from "./pages/RequestDonation";
 import MyDonations from "./pages/MyDonations";
 import Appointments from "./pages/Appointments";
 import UserCampaigns from "./pages/UserCampaigns";
+import UserCampaignDetails from "./pages/UserCampaignDetails";
 
 import OrgRegistration from "./pages/OrgRegistration";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
@@ -54,7 +55,7 @@ function AppContent() {
     location.pathname === "/request-donation" ||
     location.pathname === "/donations" ||
     location.pathname === "/appointments" ||
-    location.pathname === "/campaigns" ||
+    location.pathname.startsWith("/campaigns") ||
     location.pathname.startsWith("/admin/") ||
     location.pathname.startsWith("/org-dashboard");
 
@@ -139,6 +140,16 @@ function AppContent() {
               <ProtectedRoute requiredRole="USER">
                 <UserLayout>
                   <UserCampaigns />
+                </UserLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/campaigns/:id"
+            element={
+              <ProtectedRoute requiredRole="USER">
+                <UserLayout>
+                  <UserCampaignDetails />
                 </UserLayout>
               </ProtectedRoute>
             }

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../services/api.service';
-import { FaMapMarkerAlt, FaClock, FaCalendarAlt, FaBuilding, FaCheckCircle, FaSpinner, FaUsers, FaTint, FaHeart } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaClock, FaCalendarAlt, FaBuilding, FaCheckCircle, FaSpinner, FaUsers, FaTint, FaHeart, FaEye } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import ConfirmModal from '../components/common/ConfirmModal';
 import ModalPortal from '../components/common/ModalPortal';
 
@@ -207,14 +208,16 @@ const UserCampaigns = () => {
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
 
-                                <div className="absolute top-4 right-4">
-                                    <span className="px-4 py-1.5 bg-white/20 backdrop-blur-md text-white text-xs font-bold rounded-full border border-white/30 uppercase tracking-widest shadow-lg">
-                                        Upcoming
+                                <Link to={`/campaigns/${campaign.id}`} className="absolute top-4 right-4 z-10">
+                                    <span className="px-4 py-1.5 bg-white/20 backdrop-blur-md text-white text-xs font-bold rounded-full border border-white/30 uppercase tracking-widest shadow-lg hover:bg-white/30 transition-colors">
+                                        View Details
                                     </span>
-                                </div>
+                                </Link>
 
                                 <div className="absolute bottom-4 left-4 right-4 text-white">
-                                    <h3 className="text-xl font-black mb-1 leading-tight line-clamp-2 drop-shadow-md">{campaign.title}</h3>
+                                    <h3 className="text-xl font-black mb-1 leading-tight line-clamp-2 drop-shadow-md">
+                                        <Link to={`/campaigns/${campaign.id}`} className="hover:underline">{campaign.title}</Link>
+                                    </h3>
                                     <div className="flex items-center text-red-100 text-sm font-medium drop-shadow-md">
                                         <FaBuilding className="mr-1.5 opacity-80" />
                                         <span className="truncate">{campaign.organizer.name}</span>
@@ -293,6 +296,12 @@ const UserCampaigns = () => {
                                     >
                                         <FaHeart className="mr-2" /> Donate Money
                                     </button>
+                                    <Link
+                                        to={`/campaigns/${campaign.id}`}
+                                        className="w-full py-3 rounded-xl font-bold transition-all flex items-center justify-center tracking-wide text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 transform hover:-translate-y-0.5 border border-gray-200 dark:border-gray-600"
+                                    >
+                                        <FaEye className="mr-2" /> View Full Details
+                                    </Link>
                                 </div>
                             </div>
                         </motion.div>
@@ -353,8 +362,8 @@ const UserCampaigns = () => {
                                             key={amt}
                                             onClick={() => setDonateAmount(String(amt))}
                                             className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${donateAmount === String(amt)
-                                                    ? 'bg-pink-600 text-white shadow-md'
-                                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-pink-900/20'
+                                                ? 'bg-pink-600 text-white shadow-md'
+                                                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-pink-900/20'
                                                 }`}
                                         >
                                             Rs. {amt}
