@@ -25,12 +25,27 @@ app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
 // CORS configuration (Express)
+// ... after your imports ...
+
 app.use(cors({
-    origin: true,
+    // Add your local and production URLs here
+    origin: [
+        "http://localhost:5173", 
+        "https://utsab-lama-tamang-pet-ease.vercel.app" // Replace with your actual frontend URL
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization']
+    allowedHeaders: [
+        'Origin', 
+        'X-Requested-With', 
+        'Content-Type', 
+        'Accept', 
+        'Authorization',
+        'ngrok-skip-browser-warning' // Keeps ngrok GET requests working
+    ]
 }));
+
+// ... then your routes ...
 
 import { checkAndCompleteCampaigns } from './controllers/campaign.controller';
 
