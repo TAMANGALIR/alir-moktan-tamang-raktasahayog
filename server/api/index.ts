@@ -31,7 +31,7 @@ app.use(cors({
     // Add your local and production URLs here
     origin: [
         "http://localhost:5173", 
-        "https://utsab-lama-tamang-pet-ease.vercel.app" // Replace with your actual frontend URL
+        "https://alir-moktan-tamang-raktasahayog.vercel.app/"
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
@@ -41,7 +41,7 @@ app.use(cors({
         'Content-Type', 
         'Accept', 
         'Authorization',
-        'ngrok-skip-browser-warning' // Keeps ngrok GET requests working
+        'ngrok-skip-browser-warning'
     ]
 }));
 
