@@ -10,7 +10,7 @@ const fs_1 = __importDefault(require("fs"));
 // Ensure uploads directory exists
 const uploadDir = 'uploads';
 if (!fs_1.default.existsSync(uploadDir)) {
-    fs_1.default.mkdirSync(uploadDir);
+    // fs_1.default.mkdirSync(uploadDir);
 }
 const storage = multer_1.default.diskStorage({
     destination: function (req, file, cb) {
