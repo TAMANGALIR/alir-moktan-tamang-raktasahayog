@@ -17,8 +17,10 @@ const app = express();
 const httpServer = createServer(app);
 const PORT = process.env.PORT || 3000;
 
-// Initialize Socket.io
-initSocket(httpServer);
+// Initialize Socket.io (Only for non-Vercel environments)
+if (!process.env.VERCEL) {
+    initSocket(httpServer);
+}
 
 // Middleware
 app.use(express.json());
@@ -49,14 +51,17 @@ app.use(cors({
 
 import { checkAndCompleteCampaigns } from './controllers/campaign.controller';
 
-// Auto-Complete Job (Run every hour)
-setInterval(() => {
-    console.log('Running Auto-Complete Job...');
-    checkAndCompleteCampaigns();
-}, 60 * 60 * 1000);
+// Backend jobs and intervals (Disabled on Vercel as serverless handles isolated requests)
+if (!process.env.VERCEL) {
+    // Auto-Complete Job (Run every hour)
+    setInterval(() => {
+        console.log('Running Auto-Complete Job...');
+        checkAndCompleteCampaigns();
+    }, 60 * 60 * 1000);
 
-// Run once on startup
-checkAndCompleteCampaigns();
+    // Run once on startup
+    checkAndCompleteCampaigns();
+}
 
 // Routes
 app.get('/', (req: Request, res: Response) => {
