@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing and Analysis - Raktasahayog</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 900px; margin: 0 auto; padding: 20px; }
+        h1, h2, h3, h4 { color: #2c3e50; margin-top: 25px; }
+        .cover { margin-bottom: 50px; text-align: left; }
+        .toc { background: #f9f9f9; padding: 20px; margin-bottom: 30px; }
+        .toc ul { list-style-type: none; padding-left: 20px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #f4f4f4; width: 30%; }
+        pre { background: #eee; padding: 10px; overflow-x: auto; font-family: Consolas, monospace; font-size: 13px; }
+        .figure { text-align: center; font-style: italic; margin: 15px 0; color: #555; }
+        .declaration { background: #eef7fa; padding: 15px; border-left: 4px solid #3498db; margin-top: 20px; font-style: italic; }
+        .placeholder-image { background: #f0f0f0; border: 1px dashed #ccc; padding: 30px; text-align: center; color: #999; margin: 10px 0; }
+    </style>
+</head>
+<body>
+
+<div class="cover">
+    <h3>Module Code & Module Title</h3>
+    <p>FYP</p>
+    <p><strong>Submission:</strong><br>
+    Academic Semester: Autumn Semester 2025</p>
+
+    <p>Student Name: Aashish Khadka<br>
+    London Met ID: 23049144<br>
+    College ID: np05cp4a230004<br>
+    Assignment Due Date: <br>
+    Assignment Submission Date:<br>
+    Submitted To: Mr. Sujan Rai<br>
+    Word Count: 5100</p>
+
+    <div class="declaration">
+        I confirm that I understand my coursework needs to be submitted online via MST Classroom under the relevant module page before the deadline for my assignment to be accepted and marked. I am fully aware that late submissions will be treated as non-submission and a mark of zero will be awarded.
+    </div>
+</div>
+
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+        <li>1 Testing and Analysis
+            <ul>
+                <li>1.1 Test Plan
+                    <ul>
+                        <li>1.1.1 Unit Testing Test Plan</li>
+                        <li>1.1.2 System Testing Test Plan</li>
+                    </ul>
+                </li>
+                <li>1.2 Unit Testing
+                    <ul>
+                        <li>1.2.1 UT01: User Registration</li>
+                        <li>1.2.2 UT02: User Login (Valid Credentials)</li>
+                        <li>1.2.3 UT03: User Login (Invalid Credentials)</li>
+                        <li>1.2.4 UT04: JWT Token Authentication (Valid Token)</li>
+                        <li>1.2.5 UT05: JWT Token Authentication (Missing Token)</li>
+                        <li>1.2.6 UT06: Role-Based Access Control</li>
+                        <li>1.2.7 UT07: Appointment Booking by Donor</li>
+                        <li>1.2.8 UT08: Appointment Status Update (Organization Confirm)</li>
+                        <li>1.2.9 UT09: Campaign Creation by Organization</li>
+                        <li>1.2.10 UT10: Campaign View by Donor</li>
+                        <li>1.2.11 UT11: Document File Upload</li>
+                        <li>1.2.12 UT12: Real-Time Notification and Status</li>
+                        <li>1.2.13 UT13: Stripe Payment Intent Creation</li>
+                        <li>1.2.14 UT14: eSewa Payment Initialisation</li>
+                        <li>1.2.15 UT15: Admin User Management</li>
+                        <li>1.2.16 UT16: Emergency Blood Requests</li>
+                        <li>1.2.17 UT17: Blood Stock and Inventory Management</li>
+                        <li>1.2.18 UT18: Donor Profiles and Badge System</li>
+                        <li>1.2.19 UT19: Organization Registration</li>
+                    </ul>
+                </li>
+                <li>1.3 System Testing
+                    <ul>
+                        <li>1.3.1 ST01: Full Login and Dashboard Redirect by Role</li>
+                        <li>1.3.2 ST02: Donor Books an Appointment End to End</li>
+                        <li>1.3.3 ST03: Organization Manages and Confirms Appointment</li>
+                        <li>1.3.4 ST04: Organization Creates and Saves a Campaign</li>
+                        <li>1.3.5 ST05: Donor Views Campaign and Downloads Info PDF</li>
+                        <li>1.3.6 ST06: User Uploads an Identity Document</li>
+                        <li>1.3.7 ST07: Real-Time Push Notification Between Donor and Org</li>
+                        <li>1.3.8 ST08: Admin Manages and Deactivates Users</li>
+                        <li>1.3.9 ST09: Payment Flow (Stripe and eSewa)</li>
+                        <li>1.3.10 ST10: Logout and Session Termination</li>
+                        <li>1.3.11 ST11: Unauthorised Access Attempt to Protected Route</li>
+                        <li>1.3.12 ST12: System Behaviour on Invalid or Empty Form Input</li>
+                        <li>1.3.13 ST13: Real-Time Live Chat equivalent (Socket.io event sync)</li>
+                        <li>1.3.14 ST14: Admin Analytics Dashboard</li>
+                        <li>1.3.15 ST15: Donor Posts an Emergency Blood Request</li>
+                        <li>1.3.16 ST16: Organization Manages Blood Inventory</li>
+                        <li>1.3.17 ST17: Donor Profile Badges Update after Donation</li>
+                        <li>1.3.18 ST18: Organization Registration Workflow</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>Table Of Figures</h2>
+    <ul>
+        <li>Figure 1: User Registration API Test</li>
+        <li>Figure 2: User Registration Database Record</li>
+        <li>Figure 3: Code snippet of authcontroller</li>
+        <li>Figure 4: User Login API Test - 200 OK with JWT Token</li>
+        <li>Figure 5: Code snippet of user login</li>
+        <li>Figure 6: Invalid Login - 401 Unauthorized Response</li>
+        <li>Figure 7: Code snippet of user invalid login</li>
+        <li>Figure 8: Valid JWT Token - GET /api/auth/me returns 200 with user profile</li>
+        <li>Figure 9: Code Snippet of JWT token</li>
+        <li>Figure 10: Missing Token - GET /api/auth/me returns 401 Unauthorized</li>
+        <li>Figure 11: Code snippet of missing JWT token</li>
+        <li>Figure 12: Role-Based Access Control - 403 Forbidden for Donor on Admin Route</li>
+        <li>Figure 13: Code snippet for role based access</li>
+        <li>Figure 14: Appointment Booking API Test - 201 Created</li>
+        <li>Figure 15: PostgreSQL appointments table showing new document with status pending</li>
+        <li>Figure 16: Organization Confirm Appointment - 200 OK with status confirmed</li>
+        <li>Figure 17: PostgreSQL appointment row with status updated to confirmed</li>
+        <li>Figure 18: Campaign Creation API Test - 201 Created</li>
+        <li>Figure 19: PostgreSQL campaigns table with new document</li>
+        <li>Figure 20: Donor View Campaigns - 200 OK with campaign array</li>
+        <li>Figure 21: Document Upload - Postman form-data with PDF and 201 responses</li>
+        <li>Figure 22: PostgreSQL documents table with new row</li>
+        <li>Figure 23: Create Notification API Test - 200 OK</li>
+        <li>Figure 24: Send Push Alert API Test - 201 Created</li>
+        <li>Figure 25: Showing notification in database</li>
+        <li>Figure 26: Stripe Payment Intent Creation - 200 OK with clientSecret</li>
+        <li>Figure 27: PostgreSQL payments table with paymentMethod stripe and status pending</li>
+        <li>Figure 28: eSewa Payment Initialisation - 200 OK with signed form data</li>
+        <li>Figure 29: PostgreSQL payments table with paymentMethod esewa and status pending</li>
+        <li>Figure 30: Admin Get All Users - 200 OK with user list</li>
+        <li>Figure 31: Admin Deactivate User - 200 OK with isActive false</li>
+        <li>Figure 32: PostgreSQL users table showing isActive changed to false</li>
+        <li>Figure 33: Emergency Request Creation Postman - 201 Created</li>
+        <li>Figure 34: Code snippet of Emergency Controller</li>
+        <li>Figure 35: PostgreSQL emergency request document</li>
+        <li>Figure 36: Inventory Management update - 200 OK</li>
+        <li>Figure 37: Code snippet of Inventory Controller</li>
+        <li>Figure 38: PostgreSQL blood units table showing added stock</li>
+        <li>Figure 39: Upsert profile - 201 Created</li>
+        <li>Figure 40: Code snippet of Donor Profile upsert</li>
+        <li>Figure 41: PostgreSQL database showing updated donor eligibility</li>
+        <li>Figure 42: Register Organization test - 201 Created</li>
+        <li>Figure 43: Code snippet of Org Registration</li>
+        <li>Figure 44: PostgreSQL table with new Organization profile</li>
+        <li>Figure 45: donor login</li>
+        <li>Figure 46: Donor Dashboard</li>
+        <li>Figure 47: Organization login</li>
+        <li>Figure 48: Organization Dashboard</li>
+        <li>Figure 49: Admin login</li>
+        <li>Figure 50: Admin Dashboard</li>
+        <li>Figure 51: Organizations listing page</li>
+        <li>Figure 52: Appointment Booking form</li>
+        <li>Figure 53: pre-donation eligibility form</li>
+        <li>Figure 54: Book appointment</li>
+        <li>Figure 55: My Appointments page showing new appointment with status Pending</li>
+        <li>Figure 56: Organization Schedule page with pending appointments</li>
+        <li>Figure 57: Appointment status updated to Confirmed</li>
+        <li>Figure 58: Create Campaign form filled in</li>
+        <li>Figure 59: Campaigns list showing new campaign card</li>
+        <li>Figure 60: Campaign details page with details table</li>
+        <li>Figure 61: Downloaded PDF campaign document</li>
+        <li>Figure 62: Donor documents</li>
+        <li>Figure 63: Document upload interface</li>
+        <li>Figure 64: Push notification page with live event payload</li>
+        <li>Figure 65: Live update Page with Active WebSockets</li>
+        <li>Figure 66: Organization providing completion stats to donor</li>
+        <li>Figure 67: Admin User Management page with user list</li>
+        <li>Figure 68: User status changed to Inactive after deactivation</li>
+        <li>Figure 69: Deactivated user login attempt with error message</li>
+        <li>Figure 70: Payment page with Stripe and eSewa options</li>
+        <li>Figure 71: Stripe payment form with test card</li>
+        <li>Figure 72: Payment Success page after completion</li>
+        <li>Figure 73: Sidebar with Logout button</li>
+        <li>Figure 74: Redirect to Login page after logout</li>
+        <li>Figure 75: localStorage cleared in DevTools</li>
+        <li>Figure 76: Restricted Route Protection redirecting</li>
+        <li>Figure 77: Redirected to login page</li>
+        <li>Figure 78: Postman showing 403 Forbidden</li>
+        <li>Figure 79: Registration Validation errors</li>
+        <li>Figure 80: Invalid Email Input error</li>
+        <li>Figure 81: Date Validation errors</li>
+        <li>Figure 82: Live Chat sync</li>
+        <li>Figure 83: WebSockets data sync</li>
+        <li>Figure 84: Analytics Dashboard Main</li>
+        <li>Figure 85: Analytics charts view</li>
+        <li>Figure 86: Donor submitting emergency blood form</li>
+        <li>Figure 87: Socket alerts pushed to nearby users</li>
+        <li>Figure 88: Organization managing inventory grids</li>
+        <li>Figure 89: Checking low blood stock alerts</li>
+        <li>Figure 90: Donor seeing fresh eligibility badge on dashboard</li>
+        <li>Figure 91: Next eligible donation date updated via History logic</li>
+        <li>Figure 92: Organization registering and submitting verification documents</li>
+        <li>Figure 93: Waiting for Admin Approval state</li>
+    </ul>
+
+    <h2>Tables Of Table</h2>
+    <ul>
+        <li>Table 1: User Registration testcase</li>
+        <li>Table 2: User Login Valid Credentials Test Case</li>
+        <li>Table 3: User Login Test Case</li>
+        <li>Table 4: JWT Valid Token Test Case</li>
+        <li>Table 5: JWT Missing Token Test Case</li>
+        <li>Table 6: Role-Based Access Control Test Case</li>
+        <li>Table 7: Appointment Booking Test Case</li>
+        <li>Table 8: Appointment Confirm Test Case</li>
+        <li>Table 9: Campaign Creation Test Case</li>
+        <li>Table 10: Campaign View Test Case</li>
+        <li>Table 11: Document File Upload Test Case</li>
+        <li>Table 12: Real-Time Event Test Case</li>
+        <li>Table 13: Stripe Payment Intent Test Case</li>
+        <li>Table 14: eSewa Payment Initialisation Test Case</li>
+        <li>Table 15: Admin User Management Test Case</li>
+        <li>Table 16: Emergency Blood Requests Test Case</li>
+        <li>Table 17: Stock and Inventory Test Case</li>
+        <li>Table 18: Donor Profile update Test Case</li>
+        <li>Table 19: Organization Registration Test Case</li>
+        <li>Table 20: Login and Dashboard Redirect Test Case</li>
+        <li>Table 21: Donor Appointment Booking Test Case</li>
+        <li>Table 22: Organization Confirm Test Case</li>
+        <li>Table 23: Campaign Creation Test Case</li>
+        <li>Table 24: PDF Download Test Case</li>
+        <li>Table 25: Document Upload Test Case</li>
+        <li>Table 26: Push Notification Test Case</li>
+        <li>Table 27: Admin User Deactivation Test Case</li>
+        <li>Table 28: Payment Flow Test Case</li>
+        <li>Table 29: Logout Test Case</li>
+        <li>Table 30: Unauthorised Access Test Case</li>
+        <li>Table 31: Form Validation Test Case</li>
+        <li>Table 32: Live Data Sync Test Case</li>
+        <li>Table 33: Admin Analytics Dashboard Test Case</li>
+        <li>Table 34: Donor Emergency Request UI Test Case</li>
+        <li>Table 35: Inventory management UI Test Case</li>
+        <li>Table 36: Badges & Profile Update Test Case</li>
+        <li>Table 37: Organization signup loop Test Case</li>
+    </ul>
+</div>
+
+<h1>1 Testing and Analysis</h1>
+<p>Testing is a critical phase in the software development lifecycle of Raktasahayog. Testing was carried out to verify that the system operates correctly and meets all project requirements as specified in the system design. The various testing procedures were used to detect mistakes, confirm functionality, and enhance system quality. Unit testing and system testing were used to test in this project in order to cover all the modules.</p>
+
+<h2>1.1 Test Plan</h2>
+
+<h3>1.1.1 Unit Testing Test Plan</h3>
+<p>Unit testing concerns small and individual aspects of the Raktasahayog system which may include API endpoints, controller logic, service methods, middleware logic, and React components. Individual testing of each component is done to ensure that it is functioning in the right manner and giving a desired response.</p>
+<p><strong>1. Objective</strong><br>
+To verify that each module of the Raktasahayog system, including authentication (JWT and OTP), appointment management, blood campaign handling, payment processing (Stripe and eSewa), document uploads, real-time alerts, and emergency blood requests, works correctly in isolation.</p>
+<p><strong>2. Testing Method</strong><br>
+White box testing<br>
+Tools Used: Postman, Browser DevTools (Chrome and Firefox), Prisma Studio, Manual Testing</p>
+<p><strong>3. Test Environment</strong><br>
+Web browsers (Google Chrome, Mozilla Firefox), Vite dev server (frontend on localhost:5173), Node.js and Express server (backend on localhost:5000), PostgreSQL database, Visual Studio Code, Windows OS.</p>
+
+<h3>1.1.2 System Testing Test Plan</h3>
+<p>System testing checks the complete Raktasahayog system after all modules, including authentication, appointment booking, emergency blood requests, campaigns, payments, inventory, donor profiles, and admin management, are integrated. It ensures that the system works as a whole and meets the user requirements from the perspective of donors, organizations, and administrators.</p>
+<p><strong>1. Objective</strong><br>
+To confirm that the entire Raktasahayog system is operating when all the parts (React frontend, Express.js backend API, PostgreSQL database, Socket.IO real-time communication, Stripe and eSewa payment gateways) are assembled and deployed.</p>
+<p><strong>2. Testing Method</strong><br>
+Black box testing</p>
+<p><strong>3. Test Environment</strong><br>
+Web browsers (Google Chrome, Mozilla Firefox, desktop and mobile responsive views), mobile devices tested in response design mode browser DevTools, production server (Vercel) (frontend installed via live URL), deployed backend API (PostgreSQL database).</p>
+
+<h2>1.2 Unit Testing</h2>
+<p>Unit testing was performed on individual modules of the Raktasahayog system. Each function, API endpoint, and React component was tested separately to check whether the expected output is produced. The backend REST API was tested using Postman by sending HTTP requests with a particular payload to all the endpoints. The frontend was tested manually in the browser and DevTools was used to inspect it. The following unit test cases were designed to cover all major modules of the system.</p>
+
+<!-- UT01 -->
+<h3>1.2.1 UT01: User Registration</h3>
+<table>
+    <tr><th>TestID</th><td>UT01</td></tr>
+    <tr><th>Module Name</th><td>User Registration</td></tr>
+    <tr><th>Test Description</th><td>Verify that a new user can register via POST /api/auth/register</td></tr>
+    <tr><th>Expected Output</th><td>HTTP 201 response with status "success"</td></tr>
+    <tr><th>Result</th><td>Pass</td></tr>
+</table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 1: User Registration API Test</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 2: User Registration Database Record</p>
+<pre><code>export const register = async (req: Request, res: Response) => {
+    ...
+};</code></pre>
+<p class="figure">Figure 3: Code snippet of authcontroller</p>
+
+<!-- UT02 -->
+<h3>1.2.2 UT02: User Login (Valid Credentials)</h3>
+<table>
+    <tr><th>Test ID</th><td>UT02</td></tr>
+    <tr><th>Module Name</th><td>User Login</td></tr>
+    <tr><th>Test Description</th><td>Verify login via POST /api/auth/login</td></tr>
+    <tr><th>Expected Output</th><td>HTTP 200 response with JWT token</td></tr>
+    <tr><th>Result</th><td>Pass</td></tr>
+</table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 4: User Login API Test - 200 OK with JWT Token</p>
+<pre><code>if (!user) return res.status(401).json({ message: "Invalid credentials" });</code></pre>
+<p class="figure">Figure 5: Code snippet of user login</p>
+
+<!-- UT03 -->
+<h3>1.2.3 UT03: User Login (Invalid Credentials)</h3>
+<table>
+    <tr><th>Test ID</th><td>UT03</td></tr>
+    <tr><th>Module Name</th><td>User Login</td></tr>
+    <tr><th>Test Description</th><td>Verify login fails with wrong password</td></tr>
+    <tr><th>Expected Output</th><td>HTTP 401 response error</td></tr>
+    <tr><th>Result</th><td>Pass</td></tr>
+</table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 6: Invalid Login - 401 Unauthorized Response</p>
+<pre><code>// login validation snippet</code></pre>
+<p class="figure">Figure 7: Code snippet of user invalid login</p>
+
+<!-- UT04 -->
+<h3>1.2.4 UT04: JWT Token Authentication (Valid Token)</h3>
+<table>
+    <tr><th>Test ID</th><td>UT04</td></tr>
+    <tr><th>Module Name</th><td>JWT Auth</td></tr>
+    <tr><th>Test Description</th><td>Verify GET /api/auth/me returns 200</td></tr>
+    <tr><th>Expected Output</th><td>HTTP 200 Profile Auth</td></tr>
+    <tr><th>Result</th><td>Pass</td></tr>
+</table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 8: Valid JWT Token - GET /api/auth/me returns 200 with user profile</p>
+<pre><code>jwt.verify(token, process.env.JWT_SECRET)</code></pre>
+<p class="figure">Figure 9: Code Snippet of JWT token</p>
+
+<!-- UT05 -->
+<h3>1.2.5 UT05: JWT Token Authentication (Missing Token)</h3>
+<table><tr><th>Test ID</th><td>UT05</td></tr><tr><th>Expected Output</th><td>HTTP 401</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 10: Missing Token - GET /api/auth/me returns 401 Unauthorized</p>
+<pre><code>if (!token) { res.status(401).json({ error: 'Access token required' }); }</code></pre>
+<p class="figure">Figure 11: Code snippet of missing JWT token</p>
+
+<!-- UT06 -->
+<h3>1.2.6 UT06: Role-Based Access Control</h3>
+<table><tr><th>Test ID</th><td>UT06</td></tr><tr><th>Expected Output</th><td>HTTP 403 Forbidden</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 12: Role-Based Access Control - 403 Forbidden for Donor on Admin Route</p>
+<pre><code>export const authorizeRoles = (...roles: string[]) => { ... }</code></pre>
+<p class="figure">Figure 13: Code snippet for role based access</p>
+
+<!-- UT07 -->
+<h3>1.2.7 UT07: Appointment Booking by Donor</h3>
+<table><tr><th>Test ID</th><td>UT07</td></tr><tr><th>Expected Output</th><td>HTTP 201 Created</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 14: Appointment Booking API Test - 201 Created</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 15: PostgreSQL appointments table showing new document with status pending</p>
+
+<!-- UT08 -->
+<h3>1.2.8 UT08: Appointment Status Update</h3>
+<table><tr><th>Test ID</th><td>UT08</td></tr><tr><th>Expected Output</th><td>HTTP 200 Confirm</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 16: Organization Confirm Appointment - 200 OK with status confirmed</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 17: PostgreSQL appointment row with status updated to confirmed</p>
+
+<!-- UT09 -->
+<h3>1.2.9 UT09: Campaign Creation</h3>
+<table><tr><th>Test ID</th><td>UT09</td></tr><tr><th>Expected Output</th><td>HTTP 201</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 18: Campaign Creation API Test - 201 Created</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 19: PostgreSQL campaigns table with new document</p>
+
+<!-- UT10 -->
+<h3>1.2.10 UT10: Campaign View</h3>
+<table><tr><th>Test ID</th><td>UT10</td></tr><tr><th>Expected Output</th><td>HTTP 200 Data List</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 20: Donor View Campaigns - 200 OK with campaign array</p>
+
+<!-- UT11 -->
+<h3>1.2.11 UT11: Document File Upload</h3>
+<table><tr><th>Test ID</th><td>UT11</td></tr><tr><th>Expected Output</th><td>HTTP 201 Form Data</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 21: Document Upload - Postman form-data with PDF and 201 responses</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 22: PostgreSQL documents table with new row</p>
+
+<!-- UT12 -->
+<h3>1.2.12 UT12: Notification Status</h3>
+<table><tr><th>Test ID</th><td>UT12</td></tr><tr><th>Expected Output</th><td>HTTP 200 Push Alerts</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 23: Create Notification API Test - 200 OK</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 24: Send Push Alert API Test - 201 Created</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 25: Showing notification in database</p>
+
+<!-- UT13 -->
+<h3>1.2.13 UT13: Stripe Intents</h3>
+<table><tr><th>Test ID</th><td>UT13</td></tr><tr><th>Expected Output</th><td>Client Secret returned</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 26: Stripe Payment Intent Creation - 200 OK with clientSecret</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 27: PostgreSQL payments table with paymentMethod stripe and status pending</p>
+
+<!-- UT14 -->
+<h3>1.2.14 UT14: eSewa Signature</h3>
+<table><tr><th>Test ID</th><td>UT14</td></tr><tr><th>Expected Output</th><td>Hash Generated 200</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 28: eSewa Payment Initialisation - 200 OK with signed form data</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 29: PostgreSQL payments table with paymentMethod esewa and status pending</p>
+
+<!-- UT15 -->
+<h3>1.2.15 UT15: Admins API</h3>
+<table><tr><th>Test ID</th><td>UT15</td></tr><tr><th>Expected Output</th><td>User Suspended 200</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 30: Admin Get All Users - 200 OK with user list</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 31: Admin Deactivate User - 200 OK with isActive false</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 32: PostgreSQL users table showing isActive changed to false</p>
+
+<!-- UT16 -->
+<h3>1.2.16 UT16: Emergency Blood Requests</h3>
+<table>
+    <tr><th>Test ID</th><td>UT16</td></tr>
+    <tr><th>Module Name</th><td>Emergency Blood Request Engine</td></tr>
+    <tr><th>Test Description</th><td>Verify organizations can trigger Haversine distance calculations and push emergency requests via coordinates.</td></tr>
+    <tr><th>Expected Output</th><td>HTTP 201 Created identifying distance logic radius mapped.</td></tr>
+    <tr><th>Result</th><td>Pass</td></tr>
+</table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 33: Emergency Request Creation Postman - 201 Created</p>
+<pre><code>export const createEmergencyRequest = async (req: AuthenticatedRequest, res: Response) => {
+    const eligibleDonors = await findEligibleDonors(bloodGroup, parseFloat(latitude), parseFloat(longitude), radiusKm);
+    ...
+};</code></pre>
+<p class="figure">Figure 34: Code snippet of Emergency Controller</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 35: PostgreSQL emergency request document</p>
+
+<!-- UT17 -->
+<h3>1.2.17 UT17: Blood Stock and Inventory Management</h3>
+<table>
+    <tr><th>Test ID</th><td>UT17</td></tr>
+    <tr><th>Module Name</th><td>Blood Inventory Aggregation</td></tr>
+    <tr><th>Test Description</th><td>Testing adding volume and logging aggregate updates when donation completes.</td></tr>
+    <tr><th>Expected Output</th><td>HTTP 200 successful stock decrement/increment operations across nodes.</td></tr>
+    <tr><th>Result</th><td>Pass</td></tr>
+</table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 36: Inventory Management update - 200 OK</p>
+<pre><code>export const updateInventory = async (req: Request | any, res: Response): Promise&lt;void&gt; => {
+    ...
+    await tx.bloodInventory.update({ data: { quantity: { increment: 1 } } });
+};</code></pre>
+<p class="figure">Figure 37: Code snippet of Inventory Controller</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 38: PostgreSQL blood units table showing added stock</p>
+
+<!-- UT18 -->
+<h3>1.2.18 UT18: Donor Profiles and Badge System</h3>
+<table>
+    <tr><th>Test ID</th><td>UT18</td></tr>
+    <tr><th>Module Name</th><td>Donor Profile Logic</td></tr>
+    <tr><th>Test Description</th><td>Verifying the automatic wait period computation (56 days) on eligibility checking routes.</td></tr>
+    <tr><th>Expected Output</th><td>HTTP 201 response validating medical checks (weight > 50, age 18-65).</td></tr>
+    <tr><th>Result</th><td>Pass</td></tr>
+</table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 39: Upsert profile - 201 Created</p>
+<pre><code>// Age & Weight Validation
+if (Number(weight) &lt; 50) reasons.push('Underweight');
+if (age &lt; 18 || age &gt; 65) reasons.push('Not in eligible range');</code></pre>
+<p class="figure">Figure 40: Code snippet of Donor Profile upsert</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 41: PostgreSQL database showing updated donor eligibility</p>
+
+<!-- UT19 -->
+<h3>1.2.19 UT19: Organization Registration</h3>
+<table>
+    <tr><th>Test ID</th><td>UT19</td></tr>
+    <tr><th>Module Name</th><td>Auth Extensions</td></tr>
+    <tr><th>Test Description</th><td>Registration of Organization user entities containing specific document payload formats.</td></tr>
+    <tr><th>Expected Output</th><td>HTTP 201 user saved with proper Organization relational links.</td></tr>
+    <tr><th>Result</th><td>Pass</td></tr>
+</table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 42: Register Organization test - 201 Created</p>
+<pre><code>const newOrg = await prisma.organization.create({ data: { name, type: "HOSPITAL" } });</code></pre>
+<p class="figure">Figure 43: Code snippet of Org Registration</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 44: PostgreSQL table with new Organization profile</p>
+
+<h2>1.3 System Testing</h2>
+
+<!-- ST01 -->
+<h3>1.3.1 ST01: Full Login and Dashboard Redirect by Role</h3>
+<table><tr><th>Test ID</th><td>ST01</td></tr><tr><th>Expected Result</th><td>Correct Dashboard UI displays without flashing.</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 45: donor login</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 46: Donor Dashboard</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 47: Organization login</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 48: Organization Dashboard</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 49: Admin login</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 50: Admin Dashboard</p>
+
+<!-- ST02 to ST13 -->
+<h3>1.3.2 ST02: Donor Books an Appointment End to End</h3>
+<table><tr><th>Test ID</th><td>ST02</td></tr><tr><th>Expected Result</th><td>Appointment Pending.</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 51: Organizations listing page</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 52: Appointment Booking form</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 53: pre-donation eligibility form</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 54: Book appointment</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 55: My Appointments page showing new appointment with status Pending</p>
+
+<!-- Remaining original 14 ST logic follows numeric jumps directly corresponding to the figure mappings -->
+<h3>1.3.3 ST03: Organization Manages and Confirms Appointment</h3>
+<p>Figure 56 to Figure 57 check.</p>
+<table><tr><th>Test ID</th><td>ST03</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 56: Organization Schedule page with pending appointments</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 57: Appointment status updated to Confirmed</p>
+
+<h3>1.3.4 ST04: Organization Creates Campaign</h3>
+<table><tr><th>Test ID</th><td>ST04</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 58: Create Campaign form filled in</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 59: Campaigns list showing new campaign card</p>
+
+<h3>1.3.5 ST05: Download PDFs</h3>
+<table><tr><th>Test ID</th><td>ST05</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 60: Campaign details page with details table</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 61: Downloaded PDF campaign document</p>
+
+<h3>1.3.6 ST06: Documents</h3>
+<table><tr><th>Test ID</th><td>ST06</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 62: Donor documents</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 63: Document upload interface</p>
+
+<h3>1.3.7 ST07: Notifications</h3>
+<table><tr><th>Test ID</th><td>ST07</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 64: Push notification page with live event payload</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 65: Live update Page with Active WebSockets</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 66: Organization providing completion stats to donor</p>
+
+<h3>1.3.8 ST08: Bans</h3>
+<table><tr><th>Test ID</th><td>ST08</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 67: Admin User Management page with user list</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 68: User status changed to Inactive after deactivation</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 69: Deactivated user login attempt with error message</p>
+
+<h3>1.3.9 ST09: Transactions</h3>
+<table><tr><th>Test ID</th><td>ST09</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 70: Payment page with Stripe and eSewa options</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 71: Stripe payment form with test card</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 72: Payment Success page after completion</p>
+
+<h3>1.3.10 ST10: Storage Clears</h3>
+<table><tr><th>Test ID</th><td>ST10</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 73: Sidebar with Logout button</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 74: Redirect to Login page after logout</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 75: localStorage cleared in DevTools</p>
+
+<h3>1.3.11 ST11: Redirects Guarded</h3>
+<table><tr><th>Test ID</th><td>ST11</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 76: Restricted Route Protection redirecting</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 77: Redirected to login page</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 78: Postman showing 403 Forbidden</p>
+
+<h3>1.3.12 ST12: Forms Strict</h3>
+<table><tr><th>Test ID</th><td>ST12</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 79: Registration Validation errors</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 80: Invalid Email Input error</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 81: Date Validation errors</p>
+
+<h3>1.3.13 ST13: Websockets DOM</h3>
+<table><tr><th>Test ID</th><td>ST13</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 82: Live Chat sync</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 83: WebSockets data sync</p>
+
+<h3>1.3.14 ST14: React Rechart</h3>
+<table><tr><th>Test ID</th><td>ST14</td></tr><tr><th>Result</th><td>Pass</td></tr></table>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 84: Analytics Dashboard Main</p>
+<div class="placeholder-image">[Screenshot]</div><p class="figure">Figure 85: Analytics charts view</p>
+
+<!-- ST15 -->
+<h3>1.3.15 ST15: Donor Posts an Emergency Blood Request</h3>
+<table>
+    <tr><th>Test ID</th><td>ST15</td></tr>
+    <tr><th>Feature</th><td>Emergency UI form submission mapped to WebSockets ping</td></tr>
+    <tr><th>Test Scenario</th><td>A user fills out the request donation component and issues a valid blood group alert.</td></tr>
+    <tr><th>Expected Result</th><td>The React component submits and the surrounding donors get alerted.</td></tr>
+    <tr><th>Result</th><td>Pass</td></tr>
+</table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 86: Donor submitting emergency blood form</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 87: Socket alerts pushed to nearby users</p>
+
+<!-- ST16 -->
+<h3>1.3.16 ST16: Organization Manages Blood Inventory</h3>
+<table>
+    <tr><th>Test ID</th><td>ST16</td></tr>
+    <tr><th>Feature</th><td>OrgInventory.jsx Data Grid Manipulation</td></tr>
+    <tr><th>Test Scenario</th><td>Organization loads the inventory page and increments A+ blood unit volume safely.</td></tr>
+    <tr><th>Expected Result</th><td>Re-renders properly displaying the calculated aggregations.</td></tr>
+    <tr><th>Result</th><td>Pass</td></tr>
+</table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 88: Organization managing inventory grids</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 89: Checking low blood stock alerts</p>
+
+<!-- ST17 -->
+<h3>1.3.17 ST17: Donor Profile Badges Update after Donation</h3>
+<table>
+    <tr><th>Test ID</th><td>ST17</td></tr>
+    <tr><th>Feature</th><td>Profile.jsx Badge refresh mechanics</td></tr>
+    <tr><th>Test Scenario</th><td>Admin marks a blood unit as used or completed; Donor views dynamic badge UI change (i.e Silver/Gold logic).</td></tr>
+    <tr><th>Expected Result</th><td>Dynamic date lock applied for next 56 days and badge rendered on Dashboard Profile layout correctly.</td></tr>
+    <tr><th>Result</th><td>Pass</td></tr>
+</table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 90: Donor seeing fresh eligibility badge on dashboard</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 91: Next eligible donation date updated via History logic</p>
+
+<!-- ST18 -->
+<h3>1.3.18 ST18: Organization Registration Workflow</h3>
+<table>
+    <tr><th>Test ID</th><td>ST18</td></tr>
+    <tr><th>Feature</th><td>OrgRegistration Setup Screen</td></tr>
+    <tr><th>Test Scenario</th><td>New corporate entity creates an account mapping an Organization relation securely.</td></tr>
+    <tr><th>Expected Result</th><td>Routed correctly to specific Organization dashboard layouts after auth context switches.</td></tr>
+    <tr><th>Result</th><td>Pass</td></tr>
+</table>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 92: Organization registering and submitting verification documents</p>
+<div class="placeholder-image">[Screenshot]</div>
+<p class="figure">Figure 93: Waiting for Admin Approval state</p>
+
+</body>
+</html>
