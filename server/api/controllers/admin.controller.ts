@@ -9,6 +9,8 @@ import { hash } from 'bcryptjs';
 // Register a new Organization (Pending Verification)
 export const registerOrganization = async (req: Request | any, res: Response): Promise<void> => {
     try {
+        console.log('Register Org Request Body:', req.body);
+        console.log('Register Org Request File:', req.file);
         const { name, type, location, latitude, longitude, contactInfo, website, email, password } = req.body;
 
         let licenseUrl = req.body.licenseUrl; // Fallback or direct URL
@@ -18,7 +20,14 @@ export const registerOrganization = async (req: Request | any, res: Response): P
 
         // Basic Validation
         if (!name || !location || !licenseUrl || !email || !password) {
-            res.status(400).json({ success: false, error: 'Name, Location, Email, Password, and License Proof are required' });
+            console.log('Validation Failed. Missing fields:', {
+                name: !name,
+                location: !location,
+                licenseUrl: !licenseUrl,
+                email: !email,
+                password: !password
+            });
+            res.status(400).json({ success: false, error: 'DEBUG: Name, Location, Email, Password, and License Proof are required' });
             return;
         }
 

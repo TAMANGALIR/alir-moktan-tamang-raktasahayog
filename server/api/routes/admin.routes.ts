@@ -6,7 +6,8 @@ import { upload } from '../middleware/upload.middleware';
 const router = Router();
 
 // Public: Register Organization (Hospital/Blood Bank)
-router.post('/register-org', upload.single('license'), registerOrganization);
+router.post('/organizations', (req, res, next) => { console.log('Hit /organizations'); next(); }, upload.single('license'), registerOrganization);
+router.post('/register-org', (req, res, next) => { console.log('Hit /register-org'); next(); }, upload.single('license'), registerOrganization); // Alias for frontend
 
 // Protected: Super Admin Operations
 router.use(authenticateToken);

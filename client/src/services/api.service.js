@@ -1,14 +1,14 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://unsyllabled-limitlessly-laquita.ngrok-free.dev/api';
+const API_BASE_URL = 'http://localhost:3000/api';
 
 const apiClient = axios.create({
     baseURL: API_BASE_URL,
-    headers: {
-        'Content-Type': 'application/json',
+    // headers: {
+        // 'Content-Type': 'application/json',
         // This skips the ngrok "warning" page that causes the CORS block
-        'ngrok-skip-browser-warning': 'true', 
-    }
+        // 'ngrok-skip-browser-warning': 'true',
+    // }
 });
 
 // Request interceptor to add auth token
