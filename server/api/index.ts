@@ -117,7 +117,7 @@ app.use((req: Request, res: Response) => {
 
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
     httpServer.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
+        console.log(`Server is running on port ${PORT}`);
     });
 }
 
